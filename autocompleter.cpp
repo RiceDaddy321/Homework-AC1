@@ -1,5 +1,15 @@
 #include "autocompleter.h"
 
+/*
+To - do:
+Finish void::completions
+Finish void::completions_recurse
+Integrate to main.cpp
+
+I'll work on these and check them against main.cpp to make sure they work.
+-Miguel 
+*/
+
 Autocompleter::Autocompleter()
 {
     root = nullptr;
