@@ -1,20 +1,9 @@
 #include "autocompleter.h"
 
-/*
-To - do:
-Finish void::completions
-Finish void::completions_recurse
-Integrate to main.cpp
-
-I'll work on these and check them against main.cpp to make sure they work.
--Miguel 
-*/
-
 Autocompleter::Autocompleter()
 {
     root = nullptr;
 }
-
 void Autocompleter::insert(string x, int freq)
 {
     //step 1: call the recursive helper method
@@ -27,12 +16,10 @@ void Autocompleter::insert(string x, int freq)
 
     delete babyEntry;
 }
-
 int Autocompleter::size()
 {
     return size_recurse(root);
 }
-
 void Autocompleter::completions(string x, vector<string> &T)
 {
     vector<Entry> top_three_completions;
@@ -53,7 +40,6 @@ int Autocompleter::size_recurse(Node* p)
         return 1 + size_recurse(p->left) + size_recurse(p->right);
     }
 }
-
 void Autocompleter::completions_recurse(string x, Node* p, vector<Entry> &C)
 {
     if(p == nullptr)
@@ -73,7 +59,6 @@ void Autocompleter::completions_recurse(string x, Node* p, vector<Entry> &C)
     }
     
 }
-
 void Autocompleter::insert_recurse(Entry e, Node* &p)
 {
     if(p == nullptr) // only worry about inserting
@@ -97,7 +82,6 @@ void Autocompleter::insert_recurse(Entry e, Node* &p)
         update_top_trends(p);
     }
 }
-
 void Autocompleter::rebalance(Node* &p)
 {
     //check for Right rotations
@@ -123,7 +107,6 @@ void Autocompleter::rebalance(Node* &p)
     }
 
 }
-
 void Autocompleter::right_rotate(Node* &p)
 {
     //setup the variables

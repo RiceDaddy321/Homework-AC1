@@ -45,7 +45,7 @@ public:
 	int height()
 	{
 		return height(root);
-	}
+	};
 
 private:
 	// A helper class that stores a string and a frequency.
@@ -137,8 +137,10 @@ private:
 	void update_height(Node*& p)
 	{
 		if (p != nullptr)
+		{
 			p->height = 1 + max(height(p->left), height(p->right));
-	}
+		}
+	};
 
 	void include_p_top_three(Entry e, vector<Entry>& top_three)
 	{
@@ -239,5 +241,4 @@ private:
 		}
 	}
 };
-
 #endif
