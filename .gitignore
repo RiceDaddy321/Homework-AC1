@@ -119,3 +119,9 @@ dist
 
 # Visual Studio Stuff
 .vs/
+.vscode
+.ignore
+
+#mystuff
+HW_AVL
+autocompleter.exe

@@ -77,6 +77,7 @@ private:
 		int height;
 		Node* left;
 		Node* right;
+		vector<Entry> top_three;
 	};
 
 	// A convenience method for getting the height of a subtree.
@@ -132,6 +133,62 @@ private:
 	{
 		if (p != nullptr)
 			p->height = 1 + max(height(p->left), height(p->right));
+	}
+
+	void update_top_trends(Node* p)
+	{
+		if (p != nullptr)
+		{
+			//let's look at both sides and compare their top trends
+			int right_cursor = 0;
+			int left_cursor = 0;
+
+			p->top_three.clear();
+
+			if (p->left == nullptr && p->right == nullptr)
+			{
+				p->top_three.push_back(p->e);
+				return;
+			}
+
+			//check if left is empty
+			if (p->left == nullptr)
+			{
+				p->top_three = p->right->top_three;
+				return;
+			}
+			//check if right is empty
+			if (p->right == nullptr)
+			{
+				p->top_three = p->left->top_three;
+				return;
+			}
+
+			//fills up the top_three
+			while (p->top_three.size() < 3 && p->right->top_three.size() > right_cursor && p->left->top_three.size() > left_cursor)
+			{
+				if (p->right->top_three[right_cursor].freq > p->left->top_three[left_cursor].freq)
+				{
+					p->top_three.push_back(p->right->top_three[right_cursor]);
+					right_cursor++;
+
+					//check if the right is empty
+					if (right_cursor == p->right->top_three.size())
+						for (int i = 0; i < p->left->top_three.size(); i++)
+							p->top_three.push_back(p->left->top_three[i]);
+				}
+				else
+				{
+					p->top_three.push_back(p->left->top_three[left_cursor]);
+					left_cursor++;
+
+					//check if the left is empty
+					if (left_cursor == p->left->top_three.size())
+						for (int i = 0; i < p->right->top_three.size(); i++)
+							p->top_three.push_back(p->right->top_three[i]);
+				}
+			}
+		}
 	}
 };
 
