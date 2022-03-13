@@ -1,20 +1,9 @@
 #include "autocompleter.h"
 
-/*
-To - do:
-Finish void::completions
-Finish void::completions_recurse
-Integrate to main.cpp
-
-I'll work on these and check them against main.cpp to make sure they work.
--Miguel 
-*/
-
 Autocompleter::Autocompleter()
 {
     root = nullptr;
 }
-
 void Autocompleter::insert(string x, int freq)
 {
     //step 1: call the recursive helper method
@@ -27,12 +16,10 @@ void Autocompleter::insert(string x, int freq)
 
     delete babyEntry;
 }
-
 int Autocompleter::size()
 {
     return size_recurse(root);
 }
-
 void Autocompleter::completions(string x, vector<string> &T)
 {
     vector<Entry> top_three_completions;
@@ -41,7 +28,10 @@ void Autocompleter::completions(string x, vector<string> &T)
     for (Entry completion : top_three_completions)
         T.push_back(completion.s);
 }
-
+int Autocompleter::height()
+{
+    return height(root);
+};
 int Autocompleter::size_recurse(Node* p)
 {
     if(p == nullptr)
@@ -53,7 +43,6 @@ int Autocompleter::size_recurse(Node* p)
         return 1 + size_recurse(p->left) + size_recurse(p->right);
     }
 }
-
 void Autocompleter::completions_recurse(string x, Node* p, vector<Entry> &C)
 {
     if(p == nullptr)
@@ -73,7 +62,6 @@ void Autocompleter::completions_recurse(string x, Node* p, vector<Entry> &C)
     }
     
 }
-
 void Autocompleter::insert_recurse(Entry e, Node* &p)
 {
     if(p == nullptr) // only worry about inserting
@@ -96,7 +84,6 @@ void Autocompleter::insert_recurse(Entry e, Node* &p)
         rebalance(p);
     }
 }
-
 void Autocompleter::rebalance(Node* &p)
 {
     //check for Right rotations
@@ -122,7 +109,6 @@ void Autocompleter::rebalance(Node* &p)
     }
 
 }
-
 void Autocompleter::right_rotate(Node* &p)
 {
     //setup the variables
@@ -163,3 +149,65 @@ void Autocompleter::left_rotate(Node* &p)
     update_top_trends(a);
     update_top_trends(b);
 }
+void Autocompleter::update_height(Node*& p)
+{
+    if (p != nullptr)
+    {
+        p->height = 1 + max(height(p->left), height(p->right));
+    }
+};
+void Autocompleter::update_top_trends(Node* p)
+{
+    if (p != nullptr)
+    {
+        //let's look at both sides and compare their top trends
+        int right_cursor = 0;
+        int left_cursor = 0;
+
+        p->top_three.clear();
+
+        if (p->left == nullptr && p->right == nullptr)
+        {
+            p->top_three.push_back(p->e);
+            return;
+        }
+
+        //check if left is empty
+        if (p->left == nullptr)
+        {
+            p->top_three = p->right->top_three;
+            return;
+        }
+        //check if right is empty
+        if (p->right == nullptr)
+        {
+            p->top_three = p->left->top_three;
+            return;
+        }
+
+        //fills up the top_three
+        while (p->top_three.size() < 3 && p->right->top_three.size() > right_cursor && p->left->top_three.size() > left_cursor)
+        {
+            if (p->right->top_three[right_cursor].freq > p->left->top_three[left_cursor].freq)
+            {
+                p->top_three.push_back(p->right->top_three[right_cursor]);
+                right_cursor++;
+
+                //check if the right is empty
+                if (right_cursor == p->right->top_three.size())
+                    for (int i = 0; i < p->left->top_three.size(); i++)
+                        p->top_three.push_back(p->left->top_three[i]);
+            }
+            else
+            {
+                p->top_three.push_back(p->left->top_three[left_cursor]);
+                left_cursor++;
+
+                //check if the left is empty
+                if (left_cursor == p->left->top_three.size())
+                    for (int i = 0; i < p->right->top_three.size(); i++)
+                        p->top_three.push_back(p->right->top_three[i]);
+            }
+        }
+    }
+};

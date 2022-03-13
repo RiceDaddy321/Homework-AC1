@@ -39,13 +39,10 @@ public:
 	// Instead, only search regions of the tree for which a completion could
 	// be present, which will yield a run time bound of O(k log n ) time,
 	// where k is the number of completions in the tree.
-	void completions(string x, vector<string> &T);
+	void completions(string x, vector<string>& T);
 
 	//Reports height of the AVL tree, runs in O(1) time.
-	int height()
-	{
-		return height(root);
-	}
+	int height();
 
 private:
 	// A helper class that stores a string and a frequency.
@@ -102,12 +99,12 @@ private:
 	int size_recurse(Node* p);
 
 	// Fills C with the completions of x in the BST rooted at p.
-	void completions_recurse(string x, Node* p, vector<Entry> &C);
+	void completions_recurse(string x, Node* p, vector<Entry>& C);
 
 	// Inserts an Entry into an AVL tree rooted at p.
 	//
 	// Should run in O(log(n)) time.
-	void insert_recurse(Entry e, Node* &p);
+	void insert_recurse(Entry e, Node*& p);
 
 	// Rebalances the AVL tree rooted at p.
 	// Helpful for insert().
@@ -115,81 +112,25 @@ private:
 	// the search in reverse search order.
 	//
 	// Should run in O(1) time.
-	void rebalance(Node* &p);
+	void rebalance(Node*& p);
 
 	// Perform left and right rotations
 	// of an AVL tree rooted at p (helpful for implementing rebalance).
 	//
 	// Should run in O(1) time.
-	void right_rotate(Node* &p);
-	void left_rotate(Node* &p);
+	void right_rotate(Node*& p);
+	void left_rotate(Node*& p);
 
 
 	//A useful method to update
 	//the height of a node,
 	//assuming subtrees already have
 	//the correct height.
-	void update_height(Node*& p)
-	{
-		if (p != nullptr)
-			p->height = 1 + max(height(p->left), height(p->right));
-	}
+	void update_height(Node*& p);
 
-	void update_top_trends(Node* p)
-	{
-		if (p != nullptr)
-		{
-			//let's look at both sides and compare their top trends
-			int right_cursor = 0;
-			int left_cursor = 0;
+	//Function to help update top trends.
+	//Goes through 1 of 3 scnearios and then fills depending on which fits best.
+	void update_top_trends(Node* p);
 
-			p->top_three.clear();
-
-			if (p->left == nullptr && p->right == nullptr)
-			{
-				p->top_three.push_back(p->e);
-				return;
-			}
-
-			//check if left is empty
-			if (p->left == nullptr)
-			{
-				p->top_three = p->right->top_three;
-				return;
-			}
-			//check if right is empty
-			if (p->right == nullptr)
-			{
-				p->top_three = p->left->top_three;
-				return;
-			}
-
-			//fills up the top_three
-			while (p->top_three.size() < 3 && p->right->top_three.size() > right_cursor && p->left->top_three.size() > left_cursor)
-			{
-				if (p->right->top_three[right_cursor].freq > p->left->top_three[left_cursor].freq)
-				{
-					p->top_three.push_back(p->right->top_three[right_cursor]);
-					right_cursor++;
-
-					//check if the right is empty
-					if (right_cursor == p->right->top_three.size())
-						for (int i = 0; i < p->left->top_three.size(); i++)
-							p->top_three.push_back(p->left->top_three[i]);
-				}
-				else
-				{
-					p->top_three.push_back(p->left->top_three[left_cursor]);
-					left_cursor++;
-
-					//check if the left is empty
-					if (left_cursor == p->left->top_three.size())
-						for (int i = 0; i < p->right->top_three.size(); i++)
-							p->top_three.push_back(p->right->top_three[i]);
-				}
-			}
-		}
-	}
 };
-
 #endif

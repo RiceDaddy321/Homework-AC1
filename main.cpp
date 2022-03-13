@@ -83,10 +83,10 @@ int main()
 	animals.insert("giraffe", 978584);
 	test(animals.size() == 13);
 	test(animals.height() == 3);
-
+	
 	Autocompleter words;
 	test(words.size() == 0);
-
+	
 	ifstream f;
 	f.open("words2.txt");
 	assert(f.is_open()); // If this fails, you're missing words2.txt
@@ -99,7 +99,7 @@ int main()
 	f.close();
 	test(words.size() == 293147);
 	test(words.height() == 20);
-
+	cout << "We Good" << endl;
 	// Test insert() and size()
 	animals.insert("buffalo", 17808542);
 	test(animals.size() == 14);
@@ -114,6 +114,7 @@ int main()
 	test(animals.size() == 17);
 	test(animals.height() == 4);
 
+	
 	// Test completions()
 	animals.completions("a", R);
 	test(R.size() == 3);
