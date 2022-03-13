@@ -80,7 +80,7 @@ void Autocompleter::insert_recurse(Entry e, Node* &p)
     {
         p = new Node;
         p->e = e;
-        update_top_trends(p);
+        p->top_three.push_back(e);
     }
     else
     {
@@ -92,8 +92,9 @@ void Autocompleter::insert_recurse(Entry e, Node* &p)
 
         //check if we screwed anything
         update_height(p);
-        update_top_trends(p);
         rebalance(p);
+        //for the case that we don't need to rebalance
+        update_top_trends(p);
     }
 }
 
