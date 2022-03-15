@@ -82,7 +82,6 @@ private:
 		int height;
 		Node* left;
 		Node* right;
-		vector<Entry> top_three;
 	};
 
 	// A convenience method for getting the height of a subtree.
@@ -140,105 +139,7 @@ private:
 		{
 			p->height = 1 + max(height(p->left), height(p->right));
 		}
-	};
-
-	void include_p_top_three(Entry e, vector<Entry>& top_three)
-	{
-		if (top_three.size() == 3)
-		{
-			for (int i = 0; i < 3; i++)
-			{
-				if (e.freq > top_three[i].freq)
-				{
-					swap(top_three[i], top_three[2]);
-					top_three[i] = e;
-
-					return; //it's been inserted, and now we are done
-				}
-			}
-
-		}
-		else
-		{
-			top_three.push_back(e);
-
-			for (int i = 0; i < top_three.size(); ++i)
-			{
-				//find the greatest
-				int greatest = i;
-				for (int j = i; j < top_three.size(); ++j)
-				{
-					if (top_three[j].freq > top_three[greatest].freq)
-						greatest = j;
-				}
-
-				swap(top_three[i], top_three[greatest]);
-			}
-		}
 	}
 
-
-	void update_top_trends(Node* p)
-	{
-		if (p != nullptr)
-		{
-			//let's look at both sides and compare their top trends
-			int right_cursor = 0;
-			int left_cursor = 0;
-
-			p->top_three.clear();
-			
-			//include case which both are nullptr
-			if (p->left == nullptr && p->right == nullptr)
-			{
-				p->top_three.push_back(p->e);
-				return; //nothing else to do
-			}
-
-			if (p->left == nullptr || p->right == nullptr)
-			{
-				//check if left is empty
-				if (p->left == nullptr)
-				{
-					p->top_three = p->right->top_three;
-
-				}
-				//check if right is empty
-				else if (p->right == nullptr)
-				{
-					p->top_three = p->left->top_three;
-				}
-			}
-			else
-			{
-				//fills up the top_three
-				while (p->top_three.size() < 3 && p->right->top_three.size() > right_cursor && p->left->top_three.size() > left_cursor)
-				{
-					if (p->right->top_three[right_cursor].freq > p->left->top_three[left_cursor].freq)
-					{
-						p->top_three.push_back(p->right->top_three[right_cursor]);
-						right_cursor++;
-
-						//check if the right is empty
-						if (right_cursor == p->right->top_three.size())
-							for (int i = left_cursor; 3 > p->top_three.size() && i < p->left->top_three.size(); ++i)
-								p->top_three.push_back(p->left->top_three[i]);
-					}
-					else
-					{
-						p->top_three.push_back(p->left->top_three[left_cursor]);
-						left_cursor++;
-
-						//check if the left is empty
-						if (left_cursor == p->left->top_three.size())
-							for (int i = right_cursor; 3 > p->top_three.size() && i < p->right->top_three.size(); ++i)
-								p->top_three.push_back(p->right->top_three[i]);
-					}
-				}
-			}
-
-			include_p_top_three(p->e, p->top_three);
-		}
-	}
 };
 #endif
