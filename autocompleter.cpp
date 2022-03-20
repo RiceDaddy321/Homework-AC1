@@ -22,11 +22,41 @@ int Autocompleter::size()
 }
 void Autocompleter::completions(string x, vector<string> &T)
 {
+    //instantiate variables
     vector<Entry> top_three_completions;
-    completions_recurse(x, root, top_three_completions);
+    Node* iptr = root;
+    bool found = false;
 
-    for (Entry completion : top_three_completions)
-        T.push_back(completion.s);
+    //clear T
+    T.clear();
+
+    while (iptr != nullptr && !found)
+    {
+        if (iptr->e.s.substr(0, x.size()) > x)
+        {
+            iptr = iptr->left;
+        }
+        else if (iptr->e.s.substr(0, x.size()) < x)
+        {
+            iptr = iptr->right;
+        }
+        else //found the start of the tree
+        {
+            found = true;
+        }
+    }
+
+    if (found)
+    {
+        completions_recurse(x, iptr, top_three_completions);
+
+        for (Entry completion : top_three_completions)
+            T.push_back(completion.s);
+    }
+    else
+    {
+        return; //not here
+    }
 }
 
 int Autocompleter::size_recurse(Node* p)
@@ -46,16 +76,35 @@ void Autocompleter::completions_recurse(string x, Node* p, vector<Entry> &C)
     {
         return; //do nothing
     }
-    if(p->e.s.substr(0, x.size()) == x) //the current word matches has x as a prefix
-    {
-        C = p->top_three;
-    }
     else //still not found
     {
-        if(p->e.s.substr(0, x.size()) < x) //go to the right
-            completions_recurse(x, p->right, C);
-        else
-            completions_recurse(x, p->left, C);
+        if (p->e.s.substr(0, x.size()) == x) //the current word matches has x as a prefix
+        {
+            C.push_back(p->e);
+
+
+            //sort this
+            for (int i = 0; i < C.size(); ++i)
+            {
+                //find the greatest
+                int greatest = i;
+                for (int j = i; j < C.size(); ++j)
+                {
+                    if (C[j].freq > C[greatest].freq)
+                        greatest = j;
+                }
+
+                swap(C[i], C[greatest]);
+            }
+
+            while (C.size() > 3)
+                C.pop_back();
+
+
+        }
+        //let's check the left and right
+        completions_recurse(x, p->right, C);
+        completions_recurse(x, p->left, C);
     }
     
 }
@@ -65,7 +114,6 @@ void Autocompleter::insert_recurse(Entry e, Node* &p)
     {
         p = new Node;
         p->e = e;
-        p->top_three.push_back(e);
     }
     else
     {
@@ -78,8 +126,6 @@ void Autocompleter::insert_recurse(Entry e, Node* &p)
         //check if we screwed anything
         update_height(p);
         rebalance(p);
-        //for the case that we don't need to rebalance
-        update_top_trends(p);
     }
 }
 void Autocompleter::rebalance(Node* &p)
@@ -122,10 +168,6 @@ void Autocompleter::right_rotate(Node* &p)
     //fix the heights
     update_height(a);
     update_height(b);    
-
-    //fix the top_trends
-    update_top_trends(a);
-    update_top_trends(b);
 }
 void Autocompleter::left_rotate(Node* &p)
 {
@@ -142,8 +184,4 @@ void Autocompleter::left_rotate(Node* &p)
     //fix the heights
     update_height(a);
     update_height(b);
-
-    //fix the top_trends
-    update_top_trends(a);
-    update_top_trends(b);
 }
